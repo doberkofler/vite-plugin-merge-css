@@ -1,0 +1,23 @@
+{
+	"compilerOptions": {
+		"target": "ES2020",
+		"module": "ESNext",
+		"declaration": true, // emit .d.ts
+		"declarationMap": false,
+		"emitDeclarationOnly": true, // only emit .d.ts (tsup handles JS bundling)
+		"removeComments": false, // ⬅️ PRESERVE JSDoc
+		"outDir": "dist/types",
+		"rootDir": "src",
+		"strict": true,
+		"esModuleInterop": true,
+		"moduleResolution": "node",
+		"skipLibCheck": true,
+		"forceConsistentCasingInFileNames": true,
+		"noFallthroughCasesInSwitch": true,
+		"noImplicitReturns": true,
+		"noImplicitAny": true,
+		"noImplicitThis": true,
+		"strictNullChecks": true
+	},
+	"include": ["src"]
+}
