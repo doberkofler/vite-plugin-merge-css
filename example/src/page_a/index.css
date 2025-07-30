@@ -1,7 +1,7 @@
 body {
 	box-sizing: border-box;
 	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-	background: white;
+	background: white; /* white background */
 	height: 100vh;
 	margin: 0;
 }
