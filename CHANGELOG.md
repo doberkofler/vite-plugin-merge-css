@@ -1,18 +1,12 @@
-# Changelog
+## 0.2.0 (2025-07-30)
 
-All notable changes to this project will be documented in this file.
+* feat: The plugin option outDir no longer needed. ([9e92a3a](https://github.com/doberkofler/vite-plugin-merge-css/commit/9e92a3a))
 
-## [0.2.0] - 2025-07-30
 
-### Added
 
-- Plugin option outDir no longer needed.
-- Check build configuration.
-- Add example folder.
-- Improve documentation.
+## 0.1.0 (2025-07-30)
 
-## [0.1.0] - 2025-07-29
+* feat: initial release ([286ca8f](https://github.com/doberkofler/vite-plugin-merge-css/commit/286ca8f))
 
-### Added
 
-- Initial release.
+

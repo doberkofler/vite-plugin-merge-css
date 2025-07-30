@@ -19,7 +19,7 @@
 		"prepublishOnly": "npm run build",
 		"lint": "prettier --check . && eslint src && tsc",
 		"test": "vitest run --coverage",
-		"create-changelog": "conventional-changelog --outfile=new_CHANGELOG.md --release-count=0",
+		"create-changelog": "conventional-changelog --release-count=0",
 		"pack-local": "rm -f *.tgz && npm run build && npm pack"
 	},
 	"main": "./dist/index.js",
