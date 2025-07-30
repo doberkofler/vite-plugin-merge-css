@@ -23,28 +23,34 @@ yarn add vite-plugin-merge-css --dev
 ```js
 // vite.config.js
 import VitePluginMergeCss from 'vite-plugin-merge-css';
+
 export default {
     build: {
-        outDir: 'dist'
+        manifest: true, // must be enabled for the plugin to work
+        rollupOptions: {
+            input: {
+                // using multiple pages
+                page_a: 'src/page_a/index.ts',
+                page_b: 'src/page_b/index.ts',
+            },
+            output: {
+                entryFileNames: '[name].js',
+            },
+        },
+        cssCodeSplit: true, // create a css file per entry point
     },
-    plugins: [VitePluginMergeCss({outDir: 'dist'})]
-}
+    plugins: [VitePluginMergeCss()],
+};
 ```
 
 ## Options
 
 ```ts
 export type VitePluginMergeCss = {
-	/**
-	 * Directory relative from root where build output will be placed.
-	 * @default 'dist'.
-	 */
-	outDir?: string;
-
-	/**
-	 * Optional flag, if the unused chunks should be removed.
-	 * @default true.
-	 */
-	cleanup?: boolean;
+    /**
+     * Optional flag if the unused chunks should be removed.
+     * @default true.
+     */
+    cleanup?: boolean;
 };
 ```

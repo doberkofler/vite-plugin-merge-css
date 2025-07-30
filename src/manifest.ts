@@ -1,6 +1,5 @@
 import {type PluginContext} from 'rollup';
 import fs from 'node:fs/promises';
-import path from 'node:path';
 
 export type ManifestEntryType = {
 	file: string;
@@ -13,14 +12,12 @@ export type ManifestEntryType = {
 };
 export type ManifestType = Record<string, ManifestEntryType>;
 
-export const loadManifest = async (pluginContext: PluginContext, dir: string): Promise<ManifestType> => {
-	const manifestPath = path.resolve(dir, '.vite/manifest.json');
-
+export const loadManifest = async (pluginContext: PluginContext, filePath: string): Promise<ManifestType> => {
 	let manifestRaw: string;
 	try {
-		manifestRaw = await fs.readFile(manifestPath, 'utf-8');
+		manifestRaw = await fs.readFile(filePath, 'utf-8');
 	} catch {
-		pluginContext.error(`Could not read manifest at "${manifestPath}", skipping.`);
+		pluginContext.error(`Could not read manifest at "${filePath}", skipping.`);
 	}
 
 	let manifest: ManifestType;
