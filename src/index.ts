@@ -18,8 +18,7 @@ export type VitePluginMergeCss = {
  */
 const VitePluginMergeCss = (options: VitePluginMergeCss = {}): Plugin => {
 	let _manifestFilePath: string;
-
-	//	let buildConfig: ReturnType<NonNullable<Parameters<Plugin['configResolved']>[0]>>;
+	let _outDir: string;
 
 	return {
 		name: 'vite-plugin-merge-css',
@@ -30,7 +29,8 @@ const VitePluginMergeCss = (options: VitePluginMergeCss = {}): Plugin => {
 				this.error('The build option "manifest" must be enabled');
 			}
 
-			_manifestFilePath = path.resolve(config.build.outDir, typeof config.build.manifest === 'string' ? config.build.manifest : '.vite/manifest.json');
+			_outDir = config.build.outDir;
+			_manifestFilePath = path.resolve(_outDir, typeof config.build.manifest === 'string' ? config.build.manifest : '.vite/manifest.json');
 		},
 
 		async closeBundle() {
@@ -41,10 +41,10 @@ const VitePluginMergeCss = (options: VitePluginMergeCss = {}): Plugin => {
 			const entries = extractEntries(manifest);
 
 			// merge css
-			const countWritten = await mergeCSS(this, entries, _manifestFilePath);
+			const countWritten = await mergeCSS(this, entries, _outDir);
 
 			// clean up original split CSS files
-			const removeCount = (options.cleanup ?? true) ? await cleanupCss(this, manifest, _manifestFilePath) : 0;
+			const removeCount = (options.cleanup ?? true) ? await cleanupCss(this, manifest, _outDir) : 0;
 
 			this.info(`Wrote ${countWritten} merged CSS files and removed ${removeCount} CSS files.`);
 		},
