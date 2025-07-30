@@ -19,6 +19,7 @@
 		"prepublishOnly": "npm run build",
 		"lint": "prettier --check . && eslint src && tsc",
 		"test": "vitest run --coverage",
+		"create-changelog": "conventional-changelog --outfile=new_CHANGELOG.md --release-count=0",
 		"pack-local": "rm -f *.tgz && npm run build && npm pack"
 	},
 	"main": "./dist/index.js",
@@ -43,6 +44,7 @@
 		"@eslint/js": "^9.31.0",
 		"@types/node": "^24.1.0",
 		"@vitest/coverage-v8": "^3.2.4",
+		"conventional-changelog": "^7.1.1",
 		"eslint": "^9.31.0",
 		"globals": "^16.3.0",
 		"prettier": "^3.6.0",
