@@ -37,7 +37,6 @@
 	},
 	"homepage": "https://github.com/doberkofler/vite-plugin-merge-css#readme",
 	"peerDependencies": {
-		"terser": "^5.16.0",
 		"vite": "^7.0.0"
 	},
 	"devDependencies": {

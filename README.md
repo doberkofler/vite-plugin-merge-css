@@ -1,5 +1,3 @@
-<h1 align="center">vite-plugin-merge-css - Welcome</h1>
-
 # vite-plugin-merge-css
 
 A vite plugin that automatically merges all css chunks for each entry point into a single css file.
