@@ -33,7 +33,7 @@ export const cleanupCss = async (pluginContext: PluginContext, manifest: Manifes
 		const filePath = path.resolve(outputDir, file);
 		try {
 			await fs.unlink(filePath);
-			pluginContext.info(`Removed unused CSS: ${file}`);
+			pluginContext.debug(`Removed unused CSS: ${file}`);
 			removeCount++;
 		} catch {
 			pluginContext.warn(`Unable to remove unused CSS file "${file}".`);

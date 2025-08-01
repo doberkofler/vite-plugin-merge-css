@@ -3,6 +3,7 @@ import {type Plugin} from 'vite';
 import {loadManifest} from './manifest';
 import {extractEntries, mergeCSS} from './merge';
 import {cleanupCss} from './cleanup';
+import {intervalToString} from './util';
 
 export type VitePluginMergeCss = {
 	/**
@@ -17,25 +18,29 @@ export type VitePluginMergeCss = {
  * @param [options] - The plugin options.
  */
 const VitePluginMergeCss = (options: VitePluginMergeCss = {}): Plugin => {
-	let _manifestFilePath: string;
 	let _outDir: string;
+	let _manifest: string | boolean;
 
 	return {
 		name: 'vite-plugin-merge-css',
 		apply: 'build',
 
 		configResolved(config) {
-			if (config.build.manifest === false) {
-				this.error('The build option "manifest" must be enabled');
-			}
-
 			_outDir = config.build.outDir;
-			_manifestFilePath = path.resolve(_outDir, typeof config.build.manifest === 'string' ? config.build.manifest : '.vite/manifest.json');
+			_manifest = config.build.manifest;
 		},
 
 		async closeBundle() {
+			const startDate = new Date();
+
+			if (_manifest === false) {
+				this.warn('The build option "manifest" must be enabled');
+				return;
+			}
+
 			// load manifest
-			const manifest = await loadManifest(this, _manifestFilePath);
+			const manifestFilePath = path.resolve(_outDir, typeof _manifest === 'string' ? _manifest : '.vite/manifest.json');
+			const manifest = await loadManifest(this, manifestFilePath);
 
 			// load entries with all css dependencies
 			const entries = extractEntries(manifest);
@@ -46,7 +51,8 @@ const VitePluginMergeCss = (options: VitePluginMergeCss = {}): Plugin => {
 			// clean up original split CSS files
 			const removeCount = (options.cleanup ?? true) ? await cleanupCss(this, manifest, _outDir) : 0;
 
-			this.info(`Wrote ${countWritten} merged CSS files and removed ${removeCount} CSS files.`);
+			const elapsed = intervalToString(new Date().getTime() - startDate.getTime());
+			this.info(`Merged ${countWritten} and removed ${removeCount} css files in ${elapsed}.`);
 		},
 	};
 };

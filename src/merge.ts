@@ -49,7 +49,7 @@ export const mergeCSS = async (pluginContext: PluginContext, entries: EntryType[
 
 		try {
 			await fs.writeFile(mergedCssPath, mergedCss, 'utf-8');
-			pluginContext.info(`Wrote merged CSS: ${path.basename(mergedCssPath)}`);
+			pluginContext.debug(`Wrote merged CSS: ${path.basename(mergedCssPath)}`);
 			countWritten++;
 		} catch (e: unknown) {
 			pluginContext.warn(`Failed to write merged CSS to "${mergedCssPath}".`);
