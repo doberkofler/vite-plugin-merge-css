@@ -6,7 +6,7 @@ export default defineConfig({
 		testTimeout: 20000,
 		coverage: {
 			provider: 'v8',
-			include: ['src/**'],
+			include: ['src/**/*.ts'],
 		},
 	},
 	esbuild: {

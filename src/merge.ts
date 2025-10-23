@@ -24,7 +24,7 @@ export const extractEntries = (manifest: ManifestType): EntryType[] => {
 		}
 	}
 
-	return entries.sort((a, b) => a.file.localeCompare(b.file));
+	return entries;
 };
 
 export const mergeCSS = async (pluginContext: PluginContext, entries: EntryType[], outputDir: string): Promise<number> => {
