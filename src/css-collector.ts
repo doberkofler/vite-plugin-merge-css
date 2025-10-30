@@ -79,6 +79,15 @@ export const createCssCollector = (): CssCollector => {
 
 		// Add CSS files directly imported by this chunk
 		if (entryChunk.viteMetadata?.importedCss) {
+			// For compatibility reasons, we check if "importedCss" really is a "Set"
+			const className = Object.prototype.toString.call(entryChunk.viteMetadata?.importedCss);
+			if (className !== '[object Set]') {
+				throw new Error(
+					`The entry chunk with fileName "${entryChunk.fileName}" has a "viteMetadata.importedCss" property of type "${className}" but should be Set`,
+				);
+			}
+
+			// Process all css imports
 			entryChunk.viteMetadata.importedCss.forEach((file) => {
 				if (!seenCss.has(file)) {
 					seenCss.add(file);
