@@ -1,6 +1,6 @@
 {
 	"name": "vite-plugin-merge-css",
-	"version": "0.4.1",
+	"version": "0.5.0",
 	"type": "module",
 	"license": "MIT",
 	"author": "Dieter Oberkofler",
@@ -42,15 +42,19 @@
 	},
 	"devDependencies": {
 		"@eslint/js": "^9.31.0",
-		"@types/node": "^24.1.0",
-		"@vitest/coverage-v8": "^4.0.3",
+		"@types/debug": "^4.1.12",
+		"@types/node": "^24.9.2",
+		"@vitest/coverage-v8": "^4.0.5",
 		"conventional-changelog": "^7.1.1",
 		"eslint": "^9.31.0",
 		"globals": "^16.3.0",
 		"prettier": "^3.6.0",
-		"tsdown": "^0.15.9",
+		"tsdown": "^0.15.12",
 		"typescript": "^5.8.0",
 		"typescript-eslint": "^8.38.0",
-		"vitest": "^4.0.3"
+		"vitest": "^4.0.5"
+	},
+	"dependencies": {
+		"debug": "^4.4.3"
 	}
 }

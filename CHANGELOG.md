@@ -1,7 +1,10 @@
-## <small>0.4.1 (2025-10-23)</small>
+## 0.5.0 (2025-10-30)
 
-* chore: Add support for Node.js 25. ([8a739b4](https://github.com/doberkofler/vite-plugin-merge-css/commit/8a739b4))
+* feat: Complete reimplementation should fix the order of imports and speed up the processing. ([55e1791](https://github.com/doberkofler/vite-plugin-merge-css/commit/55e1791))
+* chore: Add support for Node.js 25. ([fca0cba](https://github.com/doberkofler/vite-plugin-merge-css/commit/fca0cba))
+* chore: Add support for Node.js 25. ([9fc969b](https://github.com/doberkofler/vite-plugin-merge-css/commit/9fc969b))
 * chore: Make sure that package-lock.json is in sync. ([9116ba0](https://github.com/doberkofler/vite-plugin-merge-css/commit/9116ba0))
+* chore: Update all dependencies. ([55ec974](https://github.com/doberkofler/vite-plugin-merge-css/commit/55ec974))
 
 
 

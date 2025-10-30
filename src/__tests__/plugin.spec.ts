@@ -84,43 +84,4 @@ describe('VitePluginMergeCss', () => {
 		await expectFileToContain(outDir, 'page_b.js', 'document.getElementById');
 		await expectFileToContain(outDir, 'page_b.css', ['background: grey; /* grey background */', 'color: lightgray; /* clock has lightgrey color */']);
 	});
-
-	it('invalid options', async () => {
-		const tempDir = os.tmpdir();
-
-		const outDir = path.join(tempDir, 'vite-plugin-merge-css', 'dist');
-		await fs.mkdir(outDir, {recursive: true});
-
-		const srcDir = path.join(tempDir, 'vite-plugin-merge-css', 'src');
-		await fs.mkdir(srcDir, {recursive: true});
-
-		const inputFile = path.resolve(path.join(srcDir, 'input.ts'));
-		await fs.writeFile(inputFile, 'console.log("test");');
-
-		const warnings: vite.Rollup.RollupLog[] = [];
-		await vite.build({
-			logLevel: 'silent',
-			build: {
-				//manifest: true,
-				rollupOptions: {
-					input: inputFile,
-					output: {
-						entryFileNames: '[name].js',
-					},
-					onwarn(warning, warn) {
-						warnings.push(warning);
-						warn(warning);
-					},
-				},
-				cssCodeSplit: true,
-				outDir,
-				emptyOutDir: true,
-				minify: false,
-			},
-			plugins: [VitePluginMergeCss()],
-		});
-
-		expect(warnings).toHaveLength(1);
-		expect(warnings[0].message).toBe('[plugin vite-plugin-merge-css] The build option "manifest" must be enabled');
-	});
 });

@@ -40,15 +40,3 @@ export default {
     plugins: [VitePluginMergeCss()],
 };
 ```
-
-## Options
-
-```ts
-export type VitePluginMergeCss = {
-    /**
-     * Optional flag if the unused chunks should be removed.
-     * @default true.
-     */
-    cleanup?: boolean;
-};
-```

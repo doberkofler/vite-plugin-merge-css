@@ -1,58 +1,58 @@
-import path from 'node:path';
-import {type Plugin} from 'vite';
-import {loadManifest} from './manifest';
-import {extractEntries, mergeCSS} from './merge';
-import {cleanupCss} from './cleanup';
-import {intervalToString} from './util';
+import {type Plugin, type Rollup} from 'vite';
+import {createCssCollector} from './css-collector';
+import {replaceExtension} from './util';
+import debugLib from 'debug';
 
-export type VitePluginMergeCss = {
-	/**
-	 * Optional flag, if the unused chunks should be removed.
-	 * @default true.
-	 */
-	cleanup?: boolean;
-};
+const debug = debugLib('vite-plugin-merge-css');
 
 /**
  * A vite plugin that automatically merges all css chunks for each entry point into a single css file.
- * @param [options] - The plugin options.
  */
-const VitePluginMergeCss = (options: VitePluginMergeCss = {}): Plugin => {
-	let _outDir: string;
-	let _manifest: string | boolean;
+const VitePluginMergeCss = (): Plugin => {
+	const cssCollector = createCssCollector();
 
 	return {
 		name: 'vite-plugin-merge-css',
 		apply: 'build',
 
-		configResolved(config) {
-			_outDir = config.build.outDir;
-			_manifest = config.build.manifest;
-		},
-
-		async closeBundle() {
+		generateBundle(_options, bundle) {
 			const startDate = new Date();
 
-			if (_manifest === false) {
-				this.warn('The build option "manifest" must be enabled');
-				return;
+			// Find all entry chunks
+			const entryChunks = Object.values(bundle).filter((output): output is Rollup.OutputChunk => output.type === 'chunk' && output.isEntry);
+
+			for (const entryChunk of entryChunks) {
+				// Collect all CSS files for this entry point
+				const cssFiles = cssCollector.getCssFilesForChunk(entryChunk, bundle);
+
+				// Concatenate CSS content from all collected files
+				const concatenatedCss =
+					`/* vide-plugin-merge-css generated on ${Date.now().toString()} merging: ${cssFiles.join(', ')} */\n\n` +
+					cssFiles
+						.map((cssFileName) => {
+							const cssAsset = bundle[cssFileName] as Rollup.OutputAsset | undefined;
+							if (!cssAsset || cssAsset.type !== 'asset') {
+								this.warn(`CSS file "${cssFileName}" referenced but not found in bundle`);
+								return '';
+							}
+							return cssAsset.source.toString();
+						})
+						.filter((content) => content.length > 0)
+						.join('\n\n');
+
+				const outputFileName = replaceExtension(entryChunk.fileName, '.css');
+
+				// Emit the concatenated CSS file
+				this.emitFile({
+					type: 'asset',
+					fileName: outputFileName,
+					source: concatenatedCss,
+				});
+
+				debug(`Generated ${outputFileName} from ${cssFiles.length} CSS file(s)`);
 			}
 
-			// load manifest
-			const manifestFilePath = path.resolve(_outDir, typeof _manifest === 'string' ? _manifest : '.vite/manifest.json');
-			const manifest = await loadManifest(this, manifestFilePath);
-
-			// load entries with all css dependencies
-			const entries = extractEntries(manifest);
-
-			// merge css
-			const countWritten = await mergeCSS(this, entries, _outDir);
-
-			// clean up original split CSS files
-			const removeCount = (options.cleanup ?? true) ? await cleanupCss(this, manifest, _outDir) : 0;
-
-			const elapsed = intervalToString(new Date().getTime() - startDate.getTime());
-			this.info(`Merged ${countWritten} and removed ${removeCount} css files in ${elapsed}.`);
+			debug(`Generated ${entryChunks.length} css files in ${((new Date().getTime() - startDate.getTime()) / 1000).toFixed(2)} seconds.`);
 		},
 	};
 };
