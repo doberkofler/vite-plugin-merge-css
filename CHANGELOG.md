@@ -1,40 +1,54 @@
-## 0.5.0 (2025-10-30)
-
-* feat: Complete reimplementation should fix the order of imports and speed up the processing. ([55e1791](https://github.com/doberkofler/vite-plugin-merge-css/commit/55e1791))
-* chore: Add support for Node.js 25. ([fca0cba](https://github.com/doberkofler/vite-plugin-merge-css/commit/fca0cba))
-* chore: Add support for Node.js 25. ([9fc969b](https://github.com/doberkofler/vite-plugin-merge-css/commit/9fc969b))
-* chore: Make sure that package-lock.json is in sync. ([9116ba0](https://github.com/doberkofler/vite-plugin-merge-css/commit/9116ba0))
-* chore: Update all dependencies. ([55ec974](https://github.com/doberkofler/vite-plugin-merge-css/commit/55ec974))
+## [0.5.1](https://github.com/doberkofler/vite-plugin-merge-css/compare/v0.5.0...v0.5.1) (2026-02-22)
 
 
 
-## 0.4.0 (2025-10-23)
-
-* fix: Remove sorting of css files to merge to keep the original include order ([e5b3a0b](https://github.com/doberkofler/vite-plugin-merge-css/commit/e5b3a0b))
-* feat: add elapsed time and improve tests ([c71c07c](https://github.com/doberkofler/vite-plugin-merge-css/commit/c71c07c))
-* chore: Add more comprehensive test of plugin ([1f72522](https://github.com/doberkofler/vite-plugin-merge-css/commit/1f72522))
-* chore: Fixed code coverage stats ([54e3dfd](https://github.com/doberkofler/vite-plugin-merge-css/commit/54e3dfd))
+# [0.5.0](https://github.com/doberkofler/vite-plugin-merge-css/compare/v0.4.0...v0.5.0) (2025-10-30)
 
 
+### Features
 
-## 0.3.0 (2025-07-30)
-
-* fix: Regression when obtaining the outDir from the vite config that cause the CSS files to be writte ([a38cafb](https://github.com/doberkofler/vite-plugin-merge-css/commit/a38cafb))
-* chore: Add create-changelog. ([4c26e59](https://github.com/doberkofler/vite-plugin-merge-css/commit/4c26e59))
-* chore: remove unused dependency ([f3b1510](https://github.com/doberkofler/vite-plugin-merge-css/commit/f3b1510))
-* chore: squashed commits and automatically generate CHANGELOG.md ([b2020fa](https://github.com/doberkofler/vite-plugin-merge-css/commit/b2020fa))
+* Complete reimplementation should fix the order of imports and speed up the processing. ([7951772](https://github.com/doberkofler/vite-plugin-merge-css/commit/7951772f44d78030575e907d70820d4827ce0add))
 
 
 
-## 0.2.0 (2025-07-30)
-
-* feat: The plugin option outDir no longer needed. ([9e92a3a](https://github.com/doberkofler/vite-plugin-merge-css/commit/9e92a3a))
+# [0.4.0](https://github.com/doberkofler/vite-plugin-merge-css/compare/v0.3.0...v0.4.0) (2025-10-23)
 
 
+### Bug Fixes
 
-## 0.1.0 (2025-07-30)
+* Remove sorting of css files to merge to keep the original include order ([e5b3a0b](https://github.com/doberkofler/vite-plugin-merge-css/commit/e5b3a0bc04a9db53f85de799a3f86e03d84665c1))
 
-* feat: initial release ([286ca8f](https://github.com/doberkofler/vite-plugin-merge-css/commit/286ca8f))
+
+### Features
+
+* add elapsed time and improve tests ([c71c07c](https://github.com/doberkofler/vite-plugin-merge-css/commit/c71c07ce85115ec4fd58a2c1a2389fc2c0f5d7c3))
+
+
+
+# [0.3.0](https://github.com/doberkofler/vite-plugin-merge-css/compare/v0.2.0...v0.3.0) (2025-07-30)
+
+
+### Bug Fixes
+
+* Regression when obtaining the outDir from the vite config that cause the CSS files to be written to the wring directory. ([a38cafb](https://github.com/doberkofler/vite-plugin-merge-css/commit/a38cafb5694f1c1669a6ab3ae0a81547357810f7))
+
+
+
+# [0.2.0](https://github.com/doberkofler/vite-plugin-merge-css/compare/v0.1.0...v0.2.0) (2025-07-30)
+
+
+### Features
+
+* The plugin option outDir no longer needed. ([9e92a3a](https://github.com/doberkofler/vite-plugin-merge-css/commit/9e92a3a641386868894a51713d8f8a34a6d7a78f))
+
+
+
+# [0.1.0](https://github.com/doberkofler/vite-plugin-merge-css/compare/286ca8ff76342e8fdc50852ef9cf72d5b2fb2e47...v0.1.0) (2025-07-30)
+
+
+### Features
+
+* initial release ([286ca8f](https://github.com/doberkofler/vite-plugin-merge-css/commit/286ca8ff76342e8fdc50852ef9cf72d5b2fb2e47))
 
 
 
