@@ -1,9 +1,10 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import os from 'node:os';
-import {describe, it, expect} from 'vitest';
-import VitePluginMergeCss from '../index';
+import {describe, it, expect, vi} from 'vitest';
+import VitePluginMergeCss from './index';
 import * as vite from 'vite';
+import type {Rollup} from 'vite';
 
 const expectFileToContain = async (outDir: string, filename: string, content: string | string[]): Promise<void> => {
 	const output = await fs.readFile(path.join(outDir, filename), 'utf-8');
@@ -83,5 +84,45 @@ describe('VitePluginMergeCss', () => {
 
 		await expectFileToContain(outDir, 'page_b.js', 'document.getElementById');
 		await expectFileToContain(outDir, 'page_b.css', ['background: grey; /* grey background */', 'color: lightgray; /* clock has lightgrey color */']);
+	});
+
+	it('handles missing css asset', async () => {
+		const plugin = VitePluginMergeCss();
+		const warnSpy = vi.fn();
+		const emitSpy = vi.fn();
+
+		const bundle: Rollup.OutputBundle = {
+			'entry.js': {
+				type: 'chunk',
+				isEntry: true,
+				fileName: 'entry.js',
+				imports: [],
+				viteMetadata: {
+					importedCss: new Set(['missing.css']),
+				},
+			} as unknown as Rollup.OutputChunk,
+		};
+
+		const context = {
+			warn: warnSpy,
+			emitFile: emitSpy,
+		} as unknown as Rollup.PluginContext;
+
+		if (plugin.generateBundle && typeof plugin.generateBundle === 'function') {
+			const generateBundle = plugin.generateBundle as (
+				this: Rollup.PluginContext,
+				options: Rollup.NormalizedOutputOptions,
+				bundle: Rollup.OutputBundle,
+				isWrite: boolean,
+			) => void | Promise<void>;
+			await generateBundle.call(context, {} as Rollup.NormalizedOutputOptions, bundle, false);
+		}
+
+		expect(warnSpy).toHaveBeenCalledWith('CSS file "missing.css" referenced but not found in bundle');
+		expect(emitSpy).toHaveBeenCalled();
+		const emittedFile = emitSpy.mock.calls[0][0];
+		expect(emittedFile.fileName).toBe('entry.css');
+		expect(emittedFile.source).toContain('/* vide-plugin-merge-css generated on');
+		// Should not contain content from missing file
 	});
 });

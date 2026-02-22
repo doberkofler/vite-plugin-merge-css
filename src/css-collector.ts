@@ -56,9 +56,14 @@ export const createCssCollector = (): CssCollector => {
 		// Return cached result if available
 		const cachedFiles = analyzedImportedCssFiles.get(entryChunk);
 		if (cachedFiles) {
-			const additionals = cachedFiles.filter((file) => !seenCss.has(file));
-			additionals.forEach((file) => seenCss.add(file));
-			return additionals;
+			const files: string[] = [];
+			cachedFiles.forEach((file) => {
+				if (!seenCss.has(file)) {
+					seenCss.add(file);
+					files.push(file);
+				}
+			});
+			return files;
 		}
 
 		const files: string[] = [];

@@ -1,6 +1,6 @@
 {
 	"name": "vite-plugin-merge-css",
-	"version": "0.5.0",
+	"version": "0.5.1",
 	"type": "module",
 	"license": "MIT",
 	"author": "Dieter Oberkofler",
@@ -19,8 +19,10 @@
 		"prepublishOnly": "npm run build",
 		"lint": "prettier --check . && eslint src && tsc",
 		"test": "vitest run --coverage",
-		"create-changelog": "conventional-changelog --release-count=0",
-		"pack-local": "rm -f *.tgz && npm run build && npm pack"
+		"ci": "npm run lint && npm run test && npm run build",
+		"create-changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0",
+		"pack-local": "rm -f *.tgz && npm run build && npm pack",
+		"prepare": "husky"
 	},
 	"main": "./dist/index.js",
 	"module": "./dist/index.js",
@@ -41,18 +43,23 @@
 		"vite": "^7.0.0"
 	},
 	"devDependencies": {
+		"@commitlint/cli": "^20.4.2",
+		"@commitlint/config-conventional": "^20.4.2",
 		"@eslint/js": "^9.31.0",
 		"@types/debug": "^4.1.12",
-		"@types/node": "^24.9.2",
-		"@vitest/coverage-v8": "^4.0.5",
+		"@types/node": "^25.3.0",
+		"@vitest/coverage-v8": "^4.0.18",
 		"conventional-changelog": "^7.1.1",
+		"conventional-changelog-angular": "^8.1.0",
+		"conventional-changelog-cli": "^5.0.0",
 		"eslint": "^9.31.0",
-		"globals": "^16.3.0",
-		"prettier": "^3.6.0",
-		"tsdown": "^0.15.12",
-		"typescript": "^5.8.0",
-		"typescript-eslint": "^8.38.0",
-		"vitest": "^4.0.5"
+		"globals": "^17.3.0",
+		"husky": "^9.1.7",
+		"prettier": "^3.8.1",
+		"tsdown": "^0.20.3",
+		"typescript": "^5.9.3",
+		"typescript-eslint": "^8.56.0",
+		"vitest": "^4.0.18"
 	},
 	"dependencies": {
 		"debug": "^4.4.3"

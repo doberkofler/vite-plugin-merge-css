@@ -1,4 +1,4 @@
-import {createCssCollector, type ViteOutputChunk, type ViteMetadata} from '../css-collector';
+import {createCssCollector, type ViteOutputChunk, type ViteMetadata} from './css-collector';
 import type {Rollup} from 'vite';
 import {describe, it, expect} from 'vitest';
 
@@ -91,5 +91,75 @@ describe('createCssCollector', () => {
 		expect(() => {
 			cssCollector.getCssFilesForChunk(entryChunk, {});
 		}).toThrow('The entry chunk with fileName "file.js" has a "viteMetadata.importedCss" property of type "[object Array]" but should be Set');
+	});
+
+	it('circular dependency', () => {
+		const cssCollector = createCssCollector();
+		const chunkA = createEntryChunk({name: 'chunkA', imports: ['chunkB.js']});
+		const chunkB = createEntryChunk({name: 'chunkB', imports: ['chunkA.js']});
+		const bundle: Rollup.OutputBundle = {
+			'chunkA.js': chunkA,
+			'chunkB.js': chunkB,
+		};
+
+		const cssFiles = cssCollector.getCssFilesForChunk(chunkA, bundle);
+		expect(cssFiles).toStrictEqual([]);
+	});
+
+	it('duplicate css across shared imports', () => {
+		const cssCollector = createCssCollector();
+		const shared = createEntryChunk({name: 'shared', viteMetadata: createViteMetadata(['shared.css'], [])});
+		const libA = createEntryChunk({name: 'libA', viteMetadata: createViteMetadata(['shared.css'], []), imports: ['shared.js']});
+		const libB = createEntryChunk({name: 'libB', viteMetadata: createViteMetadata(['shared.css'], []), imports: ['shared.js']});
+		const entry = createEntryChunk({name: 'entry', imports: ['libA.js', 'libB.js']});
+
+		const bundle: Rollup.OutputBundle = {
+			'shared.js': shared,
+			'libA.js': libA,
+			'libB.js': libB,
+			'entry.js': entry,
+		};
+
+		const cssFiles = cssCollector.getCssFilesForChunk(entry, bundle);
+		expect(cssFiles).toStrictEqual(['shared.css']);
+	});
+
+	it('cached result with seen css', () => {
+		const cssCollector = createCssCollector();
+		const lib = createEntryChunk({name: 'lib', viteMetadata: createViteMetadata(['common.css'], [])});
+		const entry = createEntryChunk({name: 'entry', imports: ['lib.js']});
+
+		const bundle: Rollup.OutputBundle = {
+			'lib.js': lib,
+			'entry.js': entry,
+		};
+
+		// First call populates cache
+		cssCollector.getCssFilesForChunk(entry, bundle);
+
+		// Second call should use cache and respect seenCss
+		const seenCss = new Set(['common.css']);
+		const cssFiles = cssCollector.getCssFilesForChunk(entry, bundle, new Set(), seenCss);
+		expect(cssFiles).toStrictEqual([]);
+	});
+
+	it('handles non-chunk imports', () => {
+		const cssCollector = createCssCollector();
+		const entry = createEntryChunk({name: 'entry', imports: ['asset.txt']});
+		const bundle: Rollup.OutputBundle = {
+			'asset.txt': {type: 'asset', fileName: 'asset.txt', source: ''} as unknown as Rollup.OutputAsset,
+		};
+
+		const cssFiles = cssCollector.getCssFilesForChunk(entry, bundle);
+		expect(cssFiles).toStrictEqual([]);
+	});
+
+	it('clears cache', () => {
+		const cssCollector = createCssCollector();
+		const entry = createEntryChunk({name: 'entry'});
+		cssCollector.getCssFilesForChunk(entry, {});
+		expect(cssCollector.getCacheSize()).toBe(1);
+		cssCollector.clearCache();
+		expect(cssCollector.getCacheSize()).toBe(0);
 	});
 });
