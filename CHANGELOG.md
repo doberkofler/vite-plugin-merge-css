@@ -1,9 +1,9 @@
-# [0.6.0](https://github.com/doberkofler/vite-plugin-merge-css/compare/v0.5.1...v0.6.0) (2026-03-17)
+# [0.8.0](https://github.com/doberkofler/vite-plugin-merge-css/compare/v0.6.0...v0.8.0) (2026-03-17)
 
 
 ### Features
 
-* add support for vite 8 ([3622d61](https://github.com/doberkofler/vite-plugin-merge-css/commit/3622d61496b71adbb570306548c85ad18af39867))
+* add support for vite 8 ([9933b2c](https://github.com/doberkofler/vite-plugin-merge-css/commit/9933b2c6c6d1ece5a6c98a41381b7b705257c0f3))
 
 ## [0.5.1](https://github.com/doberkofler/vite-plugin-merge-css/compare/v0.5.0...v0.5.1) (2026-02-22)
 
