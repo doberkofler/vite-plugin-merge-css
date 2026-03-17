@@ -1,6 +1,6 @@
 {
 	"name": "vite-plugin-merge-css",
-	"version": "0.5.1",
+	"version": "0.6.0",
 	"type": "module",
 	"license": "MIT",
 	"author": "Dieter Oberkofler",
@@ -17,51 +17,49 @@
 		"dev": "tsdown --watch",
 		"build": "tsdown",
 		"prepublishOnly": "npm run build",
-		"lint": "prettier --check . && eslint src && tsc",
+		"lint": "prettier --check . && oxlint && tsc",
 		"test": "vitest run --coverage",
 		"ci": "npm run lint && npm run test && npm run build",
 		"create-changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0",
 		"pack-local": "rm -f *.tgz && npm run build && npm pack",
 		"prepare": "husky"
 	},
-	"main": "./dist/index.js",
-	"module": "./dist/index.js",
-	"types": "./dist/index.d.ts",
+	"main": "./dist/index.mjs",
+	"module": "./dist/index.mjs",
+	"types": "./dist/index.d.mts",
 	"exports": {
-		".": "./dist/index.js",
+		".": "./dist/index.mjs",
 		"./package.json": "./package.json"
 	},
 	"engines": {
-		"node": "^20.19.0 || >=22.12.0"
+		"node": ">=22.12.0"
 	},
 	"repository": {
 		"type": "git",
 		"url": "git://github.com/doberkofler/vite-plugin-merge-css.git"
 	},
 	"homepage": "https://github.com/doberkofler/vite-plugin-merge-css#readme",
-	"peerDependencies": {
-		"vite": "^7.0.0"
-	},
 	"devDependencies": {
-		"@commitlint/cli": "^20.4.2",
-		"@commitlint/config-conventional": "^20.4.2",
-		"@eslint/js": "^9.31.0",
+		"@commitlint/cli": "^20.5.0",
+		"@commitlint/config-conventional": "^20.5.0",
 		"@types/debug": "^4.1.12",
-		"@types/node": "^25.3.0",
-		"@vitest/coverage-v8": "^4.0.18",
-		"conventional-changelog": "^7.1.1",
-		"conventional-changelog-angular": "^8.1.0",
+		"@types/node": "^25.5.0",
+		"@vitest/coverage-v8": "^4.1.0",
+		"conventional-changelog": "^7.2.0",
+		"conventional-changelog-angular": "^8.3.0",
 		"conventional-changelog-cli": "^5.0.0",
-		"eslint": "^9.31.0",
-		"globals": "^17.3.0",
 		"husky": "^9.1.7",
+		"oxlint": "^1.56.0",
 		"prettier": "^3.8.1",
-		"tsdown": "^0.20.3",
+		"tsdown": "^0.21.4",
 		"typescript": "^5.9.3",
-		"typescript-eslint": "^8.56.0",
-		"vitest": "^4.0.18"
+		"vite": "^7.0.0 || ^8.0.0",
+		"vitest": "^4.1.0"
 	},
 	"dependencies": {
 		"debug": "^4.4.3"
+	},
+	"peerDependencies": {
+		"vite": "^7.0.0 || ^8.0.0"
 	}
 }

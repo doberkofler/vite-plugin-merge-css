@@ -11,9 +11,9 @@ This document provides essential information for AI agents and developers workin
 - **Changelog generation**: `npm run create-changelog`
 
 ### Quality Control
-- **Lint everything**: `npm run lint` (Runs Prettier check, ESLint, and Type checking)
+- **Lint everything**: `npm run lint` (Runs Prettier check, oxlint, and Type checking)
 - **Prettier only**: `npx prettier --write .`
-- **ESLint only**: `npx eslint src`
+- **oxlint only**: `npx oxlint`
 - **Type check only**: `npx tsc`
 
 ### Testing
@@ -24,13 +24,13 @@ This document provides essential information for AI agents and developers workin
 ## Code Style Guidelines
 
 ### Environment
-- **Node Version**: ^20.19.0 or >=22.12.0 (as specified in `package.json`).
+- **Node Version**: >=22.12.0 (as specified in `package.json`).
 - **Dependencies**: Use `npm`. Avoid adding unnecessary dependencies. `debug` is available for logging.
 
 ### General Principles
 - **Keep it Simple**: The plugin is focused on a single task. Avoid over-engineering.
 - **Vite/Rollup Context**: Use the standard `this.warn` and `this.error` methods within Rollup hooks.
-- **Compatibility**: Ensure compatibility with Node 20.19.0+ and Vite 7.0.0+.
+- **Compatibility**: Ensure compatibility with Node 22.12.0+ and Vite 7.0.0+.
 
 ### Formatting (Enforced by Prettier)
 - **Indentation**: Use **Tabs**.
@@ -80,7 +80,7 @@ The plugin operates during the `generateBundle` hook. It:
 - **tsdown**: Used for bundling the library itself.
 - **vitest**: Used for unit testing.
 - **debug**: Used for internal logging. Enable with `DEBUG=vite-plugin-merge-css`.
-- **vite**: Peer dependency, specifically targeted at version 7+.
+- **vite**: Peer dependency, specifically targeted at version 7+ and 8+.
 
 ## Working with Examples
 When testing changes, you can use the `example/` directory.

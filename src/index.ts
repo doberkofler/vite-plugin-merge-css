@@ -57,4 +57,5 @@ const VitePluginMergeCss = (): Plugin => {
 	};
 };
 
+export {VitePluginMergeCss};
 export default VitePluginMergeCss;

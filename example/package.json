@@ -11,6 +11,6 @@
 		"vite": "^7.0.0"
 	},
 	"dependencies": {
-		"vite-plugin-merge-css": "latest"
+		"vite-plugin-merge-css": "file:.."
 	}
 }

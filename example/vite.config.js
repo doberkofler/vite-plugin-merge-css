@@ -1,4 +1,4 @@
-import VitePluginMergeCss from 'vite-plugin-merge-css';
+import {VitePluginMergeCss} from 'vite-plugin-merge-css';
 
 export default {
 	build: {

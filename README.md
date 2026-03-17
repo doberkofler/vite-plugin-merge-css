@@ -2,6 +2,9 @@
 
 A vite plugin that automatically merges all css chunks for each entry point into a single css file.
 
+> [!IMPORTANT]
+> This version of the plugin supports **Vite 7** and **Vite 8**.
+
 ## Install
 
 ```
@@ -20,7 +23,7 @@ yarn add vite-plugin-merge-css --dev
 
 ```js
 // vite.config.js
-import VitePluginMergeCss from 'vite-plugin-merge-css';
+import {VitePluginMergeCss} from 'vite-plugin-merge-css';
 
 export default {
     build: {

@@ -11,30 +11,26 @@ const createEntryChunk = (options: {name: string; viteMetadata?: ViteMetadata; i
 	const {name, viteMetadata, imports = []} = options;
 
 	const filename = `${name}.js`;
-	const entryChunk: ViteOutputChunk = {
+	const entryChunk = {
 		code: '// js code',
 		map: null,
 		sourcemapFileName: null,
 		preliminaryFileName: filename,
 		dynamicImports: [],
 		fileName: filename,
-		implicitlyLoadedBefore: [],
-		importedBindings: {},
 		imports,
 		modules: {},
-		referencedFiles: [],
 		exports: [],
 		facadeModuleId: filename,
 		isDynamicEntry: false,
 		isEntry: true,
-		isImplicitEntry: false,
 		moduleIds: [],
 		name: name,
 		type: 'chunk',
-	};
+	} as unknown as ViteOutputChunk;
 
 	if (viteMetadata) {
-		entryChunk.viteMetadata = viteMetadata;
+		entryChunk.viteMetadata = viteMetadata as any;
 	}
 
 	return entryChunk;
