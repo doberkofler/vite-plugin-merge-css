@@ -1,4 +1,8 @@
+# [0.9.0](https://github.com/doberkofler/vite-plugin-merge-css/compare/v0.8.0...v0.9.0) (2026-04-11)
+
 # [0.8.0](https://github.com/doberkofler/vite-plugin-merge-css/compare/v0.6.0...v0.8.0) (2026-03-17)
+
+# [0.6.0](https://github.com/doberkofler/vite-plugin-merge-css/compare/v0.5.1...v0.6.0) (2026-03-17)
 
 
 ### Features
