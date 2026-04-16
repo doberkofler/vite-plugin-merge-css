@@ -31,58 +31,45 @@ export type CssCollector = {
 export const createCssCollector = (): CssCollector => {
 	const analyzedImportedCssFiles = new Map<ViteOutputChunk, string[]>();
 
-	/**
-	 * Recursively collects all CSS files imported by a chunk and its dependencies
-	 * Uses post-order traversal to ensure dependency CSS is collected first
-	 *
-	 * @param entryChunk - The chunk to analyze for CSS imports
-	 * @param bundle - The complete Rollup output bundle
-	 * @param seenChunks - Set tracking visited chunks to prevent circular dependency issues
-	 * @param seenCss - Set tracking already collected CSS files to prevent duplicates
-	 * @returns Array of CSS file names in dependency order
-	 */
-	const getCssFilesForChunk = (
-		entryChunk: ViteOutputChunk,
-		bundle: Rollup.OutputBundle,
-		seenChunks: Set<string> = new Set(),
-		seenCss: Set<string> = new Set(),
-	): string[] => {
-		// Prevent infinite recursion on circular dependencies
-		if (seenChunks.has(entryChunk.fileName)) {
-			return [];
-		}
-		seenChunks.add(entryChunk.fileName);
+	const uniqueFiles = (files: string[]): string[] => {
+		const seen = new Set<string>();
+		const result: string[] = [];
 
-		// Return cached result if available
+		for (const file of files) {
+			if (!seen.has(file)) {
+				seen.add(file);
+				result.push(file);
+			}
+		}
+
+		return result;
+	};
+
+	const collectCompleteCssFilesForChunk = (entryChunk: ViteOutputChunk, bundle: Rollup.OutputBundle, recursionStack: Set<string> = new Set()): string[] => {
 		const cachedFiles = analyzedImportedCssFiles.get(entryChunk);
 		if (cachedFiles) {
-			const files: string[] = [];
-			cachedFiles.forEach((file) => {
-				if (!seenCss.has(file)) {
-					seenCss.add(file);
-					files.push(file);
-				}
-			});
-			return files;
+			return cachedFiles;
 		}
+
+		if (recursionStack.has(entryChunk.fileName)) {
+			return [];
+		}
+
+		const nextRecursionStack = new Set(recursionStack);
+		nextRecursionStack.add(entryChunk.fileName);
 
 		const files: string[] = [];
 
-		// Recursively collect CSS from imported chunks (dependencies first)
 		entryChunk.imports.forEach((file) => {
 			const importee = bundle[file];
 			if (!importee) {
 				throw new Error(`Unable to find chunk "${file}" in bundle`);
 			}
 			if (importee.type === 'chunk') {
-				files.push(...getCssFilesForChunk(importee as ViteOutputChunk, bundle, seenChunks, seenCss));
+				files.push(...collectCompleteCssFilesForChunk(importee as ViteOutputChunk, bundle, nextRecursionStack));
 			}
 		});
 
-		// Cache result for this chunk
-		analyzedImportedCssFiles.set(entryChunk, files);
-
-		// Add CSS files directly imported by this chunk
 		if (entryChunk.viteMetadata?.importedCss) {
 			// For compatibility reasons, we check if "importedCss" really is a "Set"
 			const className = Object.prototype.toString.call(entryChunk.viteMetadata?.importedCss);
@@ -92,16 +79,48 @@ export const createCssCollector = (): CssCollector => {
 				);
 			}
 
-			// Process all css imports
 			entryChunk.viteMetadata.importedCss.forEach((file) => {
-				if (!seenCss.has(file)) {
-					seenCss.add(file);
-					files.push(file);
-				}
+				files.push(file);
 			});
 		}
 
-		return files;
+		const completeChunkCssFiles = uniqueFiles(files);
+		analyzedImportedCssFiles.set(entryChunk, completeChunkCssFiles);
+
+		return completeChunkCssFiles;
+	};
+
+	/**
+	 * Collects CSS for a chunk and filters already seen CSS files for the caller context.
+	 *
+	 * @param entryChunk - The chunk to analyze for CSS imports
+	 * @param bundle - The complete Rollup output bundle
+	 * @param seenChunks - Set tracking visited chunks in caller context
+	 * @param seenCss - Set tracking already collected CSS files to prevent duplicates
+	 * @returns Array of CSS file names in dependency order
+	 */
+	const getCssFilesForChunk = (
+		entryChunk: ViteOutputChunk,
+		bundle: Rollup.OutputBundle,
+		seenChunks: Set<string> = new Set(),
+		seenCss: Set<string> = new Set(),
+	): string[] => {
+		if (seenChunks.has(entryChunk.fileName)) {
+			return [];
+		}
+		seenChunks.add(entryChunk.fileName);
+
+		const completeChunkCssFiles = collectCompleteCssFilesForChunk(entryChunk, bundle);
+
+		const filteredFiles: string[] = [];
+		completeChunkCssFiles.forEach((file) => {
+			if (!seenCss.has(file)) {
+				seenCss.add(file);
+				filteredFiles.push(file);
+			}
+		});
+
+		return filteredFiles;
 	};
 
 	/**

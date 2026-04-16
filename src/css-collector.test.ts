@@ -120,6 +120,50 @@ describe('createCssCollector', () => {
 		expect(cssFiles).toStrictEqual(['shared.css']);
 	});
 
+	it('includes shared chunk own css when chunk is cached', () => {
+		const cssCollector = createCssCollector();
+		const dep = createEntryChunk({name: 'dep', viteMetadata: createViteMetadata(['dep.css'], [])});
+		const shared = createEntryChunk({name: 'shared', viteMetadata: createViteMetadata(['shared.css'], []), imports: ['dep.js']});
+		const entryA = createEntryChunk({name: 'entryA', imports: ['shared.js']});
+		const entryB = createEntryChunk({name: 'entryB', imports: ['shared.js']});
+
+		const bundle: Rollup.OutputBundle = {
+			'dep.js': dep,
+			'shared.js': shared,
+			'entryA.js': entryA,
+			'entryB.js': entryB,
+		};
+
+		const cssFilesEntryA = cssCollector.getCssFilesForChunk(entryA, bundle);
+		expect(cssFilesEntryA).toStrictEqual(['dep.css', 'shared.css']);
+
+		const cssFilesEntryB = cssCollector.getCssFilesForChunk(entryB, bundle);
+		expect(cssFilesEntryB).toStrictEqual(['dep.css', 'shared.css']);
+	});
+
+	it('includes css from shared dependency regardless of prior traversal order', () => {
+		const cssCollector = createCssCollector();
+		const x = createEntryChunk({name: 'x', viteMetadata: createViteMetadata(['x.css'], [])});
+		const a = createEntryChunk({name: 'a', imports: ['x.js']});
+		const b = createEntryChunk({name: 'b', viteMetadata: createViteMetadata(['b.css'], []), imports: ['x.js']});
+		const entry1 = createEntryChunk({name: 'entry1', imports: ['a.js', 'b.js']});
+		const entry2 = createEntryChunk({name: 'entry2', imports: ['b.js']});
+
+		const bundle: Rollup.OutputBundle = {
+			'x.js': x,
+			'a.js': a,
+			'b.js': b,
+			'entry1.js': entry1,
+			'entry2.js': entry2,
+		};
+
+		const cssFilesEntry1 = cssCollector.getCssFilesForChunk(entry1, bundle);
+		expect(cssFilesEntry1).toStrictEqual(['x.css', 'b.css']);
+
+		const cssFilesEntry2 = cssCollector.getCssFilesForChunk(entry2, bundle);
+		expect(cssFilesEntry2).toStrictEqual(['x.css', 'b.css']);
+	});
+
 	it('cached result with seen css', () => {
 		const cssCollector = createCssCollector();
 		const lib = createEntryChunk({name: 'lib', viteMetadata: createViteMetadata(['common.css'], [])});
@@ -136,6 +180,14 @@ describe('createCssCollector', () => {
 		// Second call should use cache and respect seenCss
 		const seenCss = new Set(['common.css']);
 		const cssFiles = cssCollector.getCssFilesForChunk(entry, bundle, new Set(), seenCss);
+		expect(cssFiles).toStrictEqual([]);
+	});
+
+	it('returns empty list when chunk is already seen in caller context', () => {
+		const cssCollector = createCssCollector();
+		const entry = createEntryChunk({name: 'entry', viteMetadata: createViteMetadata(['entry.css'], [])});
+
+		const cssFiles = cssCollector.getCssFilesForChunk(entry, {}, new Set(['entry.js']));
 		expect(cssFiles).toStrictEqual([]);
 	});
 
