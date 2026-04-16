@@ -1,3 +1,10 @@
+# [1.0.0](https://github.com/doberkofler/vite-plugin-merge-css/compare/v0.9.0...v1.0.0) (2026-04-16)
+
+
+### Bug Fixes
+
+* make css collector cache order-independent for shared chunks ([80bd733](https://github.com/doberkofler/vite-plugin-merge-css/commit/80bd7337807778a73380dcba334452443b05eeb0))
+
 # [0.9.0](https://github.com/doberkofler/vite-plugin-merge-css/compare/v0.8.0...v0.9.0) (2026-04-11)
 
 # [0.8.0](https://github.com/doberkofler/vite-plugin-merge-css/compare/v0.6.0...v0.8.0) (2026-03-17)
