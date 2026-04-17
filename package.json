@@ -1,14 +1,7 @@
 {
+	"$schema": "https://raw.githubusercontent.com/vitejs/vite-plugin-registry/refs/heads/main/data/schema/extended-package-json.schema.json",
 	"name": "vite-plugin-merge-css",
 	"version": "1.1.0",
-	"$schema": "https://raw.githubusercontent.com/vitejs/vite-plugin-registry/refs/heads/main/data/schema/extended-package-json.schema.json",
-	"compatiblePackages": {
-		"schemaVersion": 1,
-		"vite": {
-			"type": "compatible",
-			"versions": "^7.0.0 || ^8.0.0"
-		}
-	},
 	"keywords": [
 		"frontend",
 		"vite",
@@ -75,5 +68,12 @@
 	},
 	"engines": {
 		"node": ">=22.12.0"
+	},
+	"compatiblePackages": {
+		"schemaVersion": 1,
+		"vite": {
+			"type": "compatible",
+			"versions": "^7.0.0 || ^8.0.0"
+		}
 	}
 }
