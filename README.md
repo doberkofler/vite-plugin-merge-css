@@ -4,6 +4,8 @@ A vite plugin that automatically merges all css chunks for each entry point into
 
 > [!IMPORTANT]
 > This version of the plugin supports **Vite 7** and **Vite 8**.
+>
+> The plugin runs with `enforce: 'post'` so CSS collection sees the final bundle state after Vite's CSS post-processing.
 
 ## Install
 

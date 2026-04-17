@@ -17,15 +17,25 @@ const expectFileToContain = async (outDir: string, filename: string, content: st
 	}
 };
 
+const createTempBuildDir = async (): Promise<{rootDir: string; srcDir: string; outDir: string}> => {
+	const rootDir = await fs.mkdtemp(path.join(os.tmpdir(), 'vite-plugin-merge-css-'));
+	const srcDir = path.join(rootDir, 'src');
+	const outDir = path.join(rootDir, 'dist');
+
+	await fs.mkdir(srcDir, {recursive: true});
+
+	return {rootDir, srcDir, outDir};
+};
+
 describe('VitePluginMergeCss', () => {
+	it('configures plugin with post enforcement', () => {
+		const plugin = createVitePluginMergeCss();
+
+		expect(plugin.enforce).toBe('post');
+	});
+
 	it('transforms code that does not need the plugin', async () => {
-		const tempDir = os.tmpdir();
-
-		const outDir = path.join(tempDir, 'vite-plugin-merge-css', 'dist');
-		await fs.mkdir(outDir, {recursive: true});
-
-		const srcDir = path.join(tempDir, 'vite-plugin-merge-css', 'src');
-		await fs.mkdir(srcDir, {recursive: true});
+		const {srcDir, outDir} = await createTempBuildDir();
 
 		const inputFile = path.resolve(path.join(srcDir, 'input.ts'));
 		await fs.writeFile(inputFile, 'console.log("test");');
@@ -49,6 +59,44 @@ describe('VitePluginMergeCss', () => {
 		});
 
 		await expectFileToContain(outDir, 'input.js', 'console.log("test");');
+	});
+
+	it('includes shared css for each entry when imports are deduplicated', async () => {
+		const {srcDir, outDir} = await createTempBuildDir();
+
+		const sharedCss = path.join(srcDir, 'shared.css');
+		const sharedTs = path.join(srcDir, 'shared.ts');
+		const entryATs = path.join(srcDir, 'entry-a.ts');
+		const entryBTs = path.join(srcDir, 'entry-b.ts');
+
+		await fs.writeFile(sharedCss, '.shared-style { color: rgb(12, 34, 56); }\n');
+		await fs.writeFile(sharedTs, "import './shared.css';\nexport const shared = 'shared';\n");
+		await fs.writeFile(entryATs, "import {shared} from './shared';\nconsole.log(shared);\n");
+		await fs.writeFile(entryBTs, "import './shared.css';\nimport {shared} from './shared';\nconsole.log(shared);\n");
+
+		await vite.build({
+			logLevel: 'silent',
+			build: {
+				manifest: true,
+				rollupOptions: {
+					input: {
+						entry_a: entryATs,
+						entry_b: entryBTs,
+					},
+					output: {
+						entryFileNames: '[name].js',
+					},
+				},
+				cssCodeSplit: true,
+				outDir,
+				emptyOutDir: true,
+				minify: false,
+			},
+			plugins: [createVitePluginMergeCss()],
+		});
+
+		await expectFileToContain(outDir, 'entry_a.css', '.shared-style');
+		await expectFileToContain(outDir, 'entry_b.css', '.shared-style');
 	});
 
 	it('transforms code from example', async () => {

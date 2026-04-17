@@ -15,6 +15,7 @@ const VitePluginMergeCss = (): Plugin => {
 	return {
 		name: 'vite-plugin-merge-css',
 		apply: 'build',
+		enforce: 'post',
 
 		generateBundle(_options, bundle) {
 			const startTime = Date.now();
