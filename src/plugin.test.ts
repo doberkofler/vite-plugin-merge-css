@@ -2,12 +2,11 @@ import path from 'node:path';
 import fs from 'node:fs/promises';
 import os from 'node:os';
 import {describe, it, expect, vi} from 'vitest';
-import VitePluginMergeCss from './index';
+import createVitePluginMergeCss from './index';
 import * as vite from 'vite';
-import type {Rollup} from 'vite';
 
 const expectFileToContain = async (outDir: string, filename: string, content: string | string[]): Promise<void> => {
-	const output = await fs.readFile(path.join(outDir, filename), 'utf-8');
+	const output = await fs.readFile(path.join(outDir, filename), 'utf8');
 
 	if (Array.isArray(content)) {
 		for (const i of content) {
@@ -46,7 +45,7 @@ describe('VitePluginMergeCss', () => {
 				emptyOutDir: true,
 				minify: false,
 			},
-			plugins: [VitePluginMergeCss()],
+			plugins: [createVitePluginMergeCss()],
 		});
 
 		await expectFileToContain(outDir, 'input.js', 'console.log("test");');
@@ -76,7 +75,7 @@ describe('VitePluginMergeCss', () => {
 				emptyOutDir: true,
 				minify: false,
 			},
-			plugins: [VitePluginMergeCss()],
+			plugins: [createVitePluginMergeCss()],
 		});
 
 		await expectFileToContain(outDir, 'page_a.js', 'document.getElementById');
@@ -87,42 +86,116 @@ describe('VitePluginMergeCss', () => {
 	});
 
 	it('handles missing css asset', async () => {
-		const plugin = VitePluginMergeCss();
-		const warnSpy = vi.fn();
-		const emitSpy = vi.fn();
+		const plugin = createVitePluginMergeCss();
+		const warnSpy = vi.fn<(warning: string) => void>();
+		type EmittedFile = {fileName: string; source: string | Uint8Array};
+		const emitSpy = vi.fn<(file: EmittedFile) => number>();
 
-		const bundle: Rollup.OutputBundle = {
+		const bundle = {
 			'entry.js': {
 				type: 'chunk',
+				code: '',
+				dynamicImports: [],
+				exports: [],
+				facadeModuleId: null,
 				isEntry: true,
+				isDynamicEntry: false,
 				fileName: 'entry.js',
 				imports: [],
+				map: null,
+				moduleIds: [],
+				modules: {},
+				name: 'entry',
+				preliminaryFileName: 'entry.js',
+				referencedFiles: [],
+				sourcemapFileName: null,
 				viteMetadata: {
 					importedCss: new Set(['missing.css']),
+					importedAssets: new Set<string>(),
 				},
-			} as unknown as Rollup.OutputChunk,
+			},
 		};
 
 		const context = {
 			warn: warnSpy,
 			emitFile: emitSpy,
-		} as unknown as Rollup.PluginContext;
+		};
 
 		if (plugin.generateBundle && typeof plugin.generateBundle === 'function') {
-			const generateBundle = plugin.generateBundle as (
-				this: Rollup.PluginContext,
-				options: Rollup.NormalizedOutputOptions,
-				bundle: Rollup.OutputBundle,
-				isWrite: boolean,
-			) => void | Promise<void>;
-			await generateBundle.call(context, {} as Rollup.NormalizedOutputOptions, bundle, false);
+			await Reflect.apply(plugin.generateBundle, context, [{}, bundle, false]);
 		}
 
 		expect(warnSpy).toHaveBeenCalledWith('CSS file "missing.css" referenced but not found in bundle');
 		expect(emitSpy).toHaveBeenCalled();
-		const emittedFile = emitSpy.mock.calls[0][0];
+		const [[emittedFile]] = emitSpy.mock.calls;
 		expect(emittedFile.fileName).toBe('entry.css');
-		expect(emittedFile.source).toContain('/* vide-plugin-merge-css generated on');
-		// Should not contain content from missing file
+		const emittedSource = typeof emittedFile.source === 'string' ? emittedFile.source : new TextDecoder().decode(emittedFile.source);
+		expect(emittedSource).toContain('/* vide-plugin-merge-css generated on');
+	});
+
+	it('warns when referenced css output is a chunk', async () => {
+		const plugin = createVitePluginMergeCss();
+		const warnSpy = vi.fn<(warning: string) => void>();
+		type EmittedFile = {fileName: string; source: string | Uint8Array};
+		const emitSpy = vi.fn<(file: EmittedFile) => number>();
+
+		const bundle = {
+			'entry.js': {
+				type: 'chunk',
+				code: '',
+				dynamicImports: [],
+				exports: [],
+				facadeModuleId: null,
+				isEntry: true,
+				isDynamicEntry: false,
+				fileName: 'entry.js',
+				imports: [],
+				map: null,
+				moduleIds: [],
+				modules: {},
+				name: 'entry',
+				preliminaryFileName: 'entry.js',
+				referencedFiles: [],
+				sourcemapFileName: null,
+				viteMetadata: {
+					importedCss: new Set(['styles.css']),
+					importedAssets: new Set<string>(),
+				},
+			},
+			'styles.css': {
+				type: 'chunk',
+				code: '',
+				dynamicImports: [],
+				exports: [],
+				facadeModuleId: null,
+				isEntry: false,
+				isDynamicEntry: false,
+				fileName: 'styles.css',
+				imports: [],
+				map: null,
+				moduleIds: [],
+				modules: {},
+				name: 'styles',
+				preliminaryFileName: 'styles.css',
+				referencedFiles: [],
+				sourcemapFileName: null,
+			},
+		};
+
+		const context = {
+			warn: warnSpy,
+			emitFile: emitSpy,
+		};
+
+		if (plugin.generateBundle && typeof plugin.generateBundle === 'function') {
+			await Reflect.apply(plugin.generateBundle, context, [{}, bundle, false]);
+		}
+
+		expect(warnSpy).toHaveBeenCalledWith('CSS file "styles.css" referenced but not found in bundle');
+		expect(emitSpy).toHaveBeenCalled();
+		const [[emittedFile]] = emitSpy.mock.calls;
+		expect(emittedFile.fileName).toBe('entry.css');
+		const emittedSource = typeof emittedFile.source === 'string' ? emittedFile.source : new TextDecoder().decode(emittedFile.source);
+		expect(emittedSource).toContain('/* vide-plugin-merge-css generated on');
 	});
 });

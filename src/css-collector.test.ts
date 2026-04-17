@@ -1,36 +1,36 @@
-import {createCssCollector, type ViteOutputChunk, type ViteMetadata} from './css-collector';
-import type {Rollup} from 'vite';
+import {createCssCollector, type OutputBundleLike, type ViteOutputChunk, type ViteMetadata} from './css-collector';
 import {describe, it, expect} from 'vitest';
 
 const createViteMetadata = (importedCss: string[], importedAssets: string[]): ViteMetadata => ({
 	importedCss: new Set(importedCss),
 	importedAssets: new Set(importedAssets),
+	__modules: {},
 });
 
 const createEntryChunk = (options: {name: string; viteMetadata?: ViteMetadata; imports?: string[]}): ViteOutputChunk => {
 	const {name, viteMetadata, imports = []} = options;
 
 	const filename = `${name}.js`;
-	const entryChunk = {
+	const entryChunk: ViteOutputChunk = {
 		code: '// js code',
-		map: null,
-		sourcemapFileName: null,
-		preliminaryFileName: filename,
 		dynamicImports: [],
-		fileName: filename,
-		imports,
-		modules: {},
 		exports: [],
 		facadeModuleId: filename,
-		isDynamicEntry: false,
 		isEntry: true,
+		isDynamicEntry: false,
+		name,
+		map: null,
+		fileName: filename,
+		imports,
 		moduleIds: [],
-		name: name,
+		modules: {},
+		preliminaryFileName: filename,
+		sourcemapFileName: null,
 		type: 'chunk',
-	} as unknown as ViteOutputChunk;
+	};
 
 	if (viteMetadata) {
-		entryChunk.viteMetadata = viteMetadata as any;
+		entryChunk.viteMetadata = viteMetadata;
 	}
 
 	return entryChunk;
@@ -58,7 +58,7 @@ describe('createCssCollector', () => {
 	it('import local css file and css file in import', () => {
 		const cssCollector = createCssCollector();
 		const entryChunk = createEntryChunk({name: 'file', viteMetadata: createViteMetadata(['file.css'], []), imports: ['lib']});
-		const bundle: Rollup.OutputBundle = {
+		const bundle: OutputBundleLike = {
 			lib: createEntryChunk({name: 'lib', viteMetadata: createViteMetadata(['lib.css'], [])}),
 		};
 
@@ -78,9 +78,11 @@ describe('createCssCollector', () => {
 
 	it('invalid chunck', () => {
 		const cssCollector = createCssCollector();
+		const invalidMetadata = createViteMetadata([], []);
+		Reflect.set(invalidMetadata, 'importedCss', ['file.css']);
 		const entryChunk = createEntryChunk({
 			name: 'file',
-			viteMetadata: {importedCss: ['file.css'] as unknown as Set<string>, importedAssets: new Set()},
+			viteMetadata: invalidMetadata,
 			imports: [],
 		});
 
@@ -93,7 +95,7 @@ describe('createCssCollector', () => {
 		const cssCollector = createCssCollector();
 		const chunkA = createEntryChunk({name: 'chunkA', imports: ['chunkB.js']});
 		const chunkB = createEntryChunk({name: 'chunkB', imports: ['chunkA.js']});
-		const bundle: Rollup.OutputBundle = {
+		const bundle: OutputBundleLike = {
 			'chunkA.js': chunkA,
 			'chunkB.js': chunkB,
 		};
@@ -109,7 +111,7 @@ describe('createCssCollector', () => {
 		const libB = createEntryChunk({name: 'libB', viteMetadata: createViteMetadata(['shared.css'], []), imports: ['shared.js']});
 		const entry = createEntryChunk({name: 'entry', imports: ['libA.js', 'libB.js']});
 
-		const bundle: Rollup.OutputBundle = {
+		const bundle: OutputBundleLike = {
 			'shared.js': shared,
 			'libA.js': libA,
 			'libB.js': libB,
@@ -127,7 +129,7 @@ describe('createCssCollector', () => {
 		const entryA = createEntryChunk({name: 'entryA', imports: ['shared.js']});
 		const entryB = createEntryChunk({name: 'entryB', imports: ['shared.js']});
 
-		const bundle: Rollup.OutputBundle = {
+		const bundle: OutputBundleLike = {
 			'dep.js': dep,
 			'shared.js': shared,
 			'entryA.js': entryA,
@@ -149,7 +151,7 @@ describe('createCssCollector', () => {
 		const entry1 = createEntryChunk({name: 'entry1', imports: ['a.js', 'b.js']});
 		const entry2 = createEntryChunk({name: 'entry2', imports: ['b.js']});
 
-		const bundle: Rollup.OutputBundle = {
+		const bundle: OutputBundleLike = {
 			'x.js': x,
 			'a.js': a,
 			'b.js': b,
@@ -169,7 +171,7 @@ describe('createCssCollector', () => {
 		const lib = createEntryChunk({name: 'lib', viteMetadata: createViteMetadata(['common.css'], [])});
 		const entry = createEntryChunk({name: 'entry', imports: ['lib.js']});
 
-		const bundle: Rollup.OutputBundle = {
+		const bundle: OutputBundleLike = {
 			'lib.js': lib,
 			'entry.js': entry,
 		};
@@ -191,11 +193,26 @@ describe('createCssCollector', () => {
 		expect(cssFiles).toStrictEqual([]);
 	});
 
-	it('handles non-chunk imports', () => {
+	it('handles imports without css', () => {
 		const cssCollector = createCssCollector();
-		const entry = createEntryChunk({name: 'entry', imports: ['asset.txt']});
-		const bundle: Rollup.OutputBundle = {
-			'asset.txt': {type: 'asset', fileName: 'asset.txt', source: ''} as unknown as Rollup.OutputAsset,
+		const entry = createEntryChunk({name: 'entry', imports: ['no-css.js']});
+		const bundle: OutputBundleLike = {
+			'no-css.js': createEntryChunk({name: 'no-css'}),
+		};
+
+		const cssFiles = cssCollector.getCssFilesForChunk(entry, bundle);
+		expect(cssFiles).toStrictEqual([]);
+	});
+
+	it('ignores imported bundle entries that are not chunks', () => {
+		const cssCollector = createCssCollector();
+		const entry = createEntryChunk({name: 'entry', imports: ['asset.dat']});
+		const bundle: OutputBundleLike = {
+			'asset.dat': {
+				type: 'asset',
+				fileName: 'asset.dat',
+				source: 'payload',
+			},
 		};
 
 		const cssFiles = cssCollector.getCssFilesForChunk(entry, bundle);
