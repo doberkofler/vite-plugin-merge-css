@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/doberkofler/vite-plugin-merge-css/compare/v1.0.0...v1.1.0) (2026-04-17)
+
+
+### Bug Fixes
+
+* enforce post-phase CSS merge and prevent shared chunk CSS regressions ([345bb73](https://github.com/doberkofler/vite-plugin-merge-css/commit/345bb73827a7a2724c4dbf1c6422b74f2d9642a1))
+
 # [1.0.0](https://github.com/doberkofler/vite-plugin-merge-css/compare/v0.9.0...v1.0.0) (2026-04-16)
 
 
