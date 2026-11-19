@@ -3,7 +3,7 @@
 A vite plugin that automatically merges all css chunks for each entry point into a single css file.
 
 > [!IMPORTANT]
-> This version of the plugin supports **Vite 7** and **Vite 8**.
+> This version of the plugin supports **Vite 7** and **Vite 8** and requires **Node.js 22.12.0 or later**.
 >
 > The plugin runs with `enforce: 'post'` so CSS collection sees the final bundle state after Vite's CSS post-processing.
 
