@@ -1,14 +1,14 @@
+# [1.2.0](https://github.com/doberkofler/vite-plugin-merge-css/compare/v1.1.1...v1.2.0) (2026-11-19)
+
 ## [1.1.1](https://github.com/doberkofler/vite-plugin-merge-css/compare/v1.1.0...v1.1.1) (2026-04-17)
 
 # [1.1.0](https://github.com/doberkofler/vite-plugin-merge-css/compare/v1.0.0...v1.1.0) (2026-04-17)
-
 
 ### Bug Fixes
 
 * enforce post-phase CSS merge and prevent shared chunk CSS regressions ([345bb73](https://github.com/doberkofler/vite-plugin-merge-css/commit/345bb73827a7a2724c4dbf1c6422b74f2d9642a1))
 
 # [1.0.0](https://github.com/doberkofler/vite-plugin-merge-css/compare/v0.9.0...v1.0.0) (2026-04-16)
-
 
 ### Bug Fixes
 
@@ -20,7 +20,6 @@
 
 # [0.6.0](https://github.com/doberkofler/vite-plugin-merge-css/compare/v0.5.1...v0.6.0) (2026-03-17)
 
-
 ### Features
 
 * add support for vite 8 ([9933b2c](https://github.com/doberkofler/vite-plugin-merge-css/commit/9933b2c6c6d1ece5a6c98a41381b7b705257c0f3))
@@ -29,18 +28,15 @@
 
 # [0.5.0](https://github.com/doberkofler/vite-plugin-merge-css/compare/v0.4.0...v0.5.0) (2025-10-30)
 
-
 ### Features
 
 * Complete reimplementation should fix the order of imports and speed up the processing. ([7951772](https://github.com/doberkofler/vite-plugin-merge-css/commit/7951772f44d78030575e907d70820d4827ce0add))
 
 # [0.4.0](https://github.com/doberkofler/vite-plugin-merge-css/compare/v0.3.0...v0.4.0) (2025-10-23)
 
-
 ### Bug Fixes
 
 * Remove sorting of css files to merge to keep the original include order ([e5b3a0b](https://github.com/doberkofler/vite-plugin-merge-css/commit/e5b3a0bc04a9db53f85de799a3f86e03d84665c1))
-
 
 ### Features
 
@@ -48,20 +44,17 @@
 
 # [0.3.0](https://github.com/doberkofler/vite-plugin-merge-css/compare/v0.2.0...v0.3.0) (2025-07-30)
 
-
 ### Bug Fixes
 
 * Regression when obtaining the outDir from the vite config that cause the CSS files to be written to the wring directory. ([a38cafb](https://github.com/doberkofler/vite-plugin-merge-css/commit/a38cafb5694f1c1669a6ab3ae0a81547357810f7))
 
 # [0.2.0](https://github.com/doberkofler/vite-plugin-merge-css/compare/v0.1.0...v0.2.0) (2025-07-30)
 
-
 ### Features
 
 * The plugin option outDir no longer needed. ([9e92a3a](https://github.com/doberkofler/vite-plugin-merge-css/commit/9e92a3a641386868894a51713d8f8a34a6d7a78f))
 
 # [0.1.0](https://github.com/doberkofler/vite-plugin-merge-css/compare/286ca8ff76342e8fdc50852ef9cf72d5b2fb2e47...v0.1.0) (2025-07-30)
-
 
 ### Features
 
