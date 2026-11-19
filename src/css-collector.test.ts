@@ -38,6 +38,7 @@ const createEntryChunk = (options: {name: string; viteMetadata?: ViteMetadata; i
 
 describe('createCssCollector', () => {
 	it('no css file', () => {
+		expect.assertions(3);
 		const cssCollector = createCssCollector();
 		const entryChunk = createEntryChunk({name: 'file'});
 		expect(cssCollector.getCacheSize()).toBe(0);
@@ -47,6 +48,7 @@ describe('createCssCollector', () => {
 	});
 
 	it('import local css file', () => {
+		expect.assertions(2);
 		const cssCollector = createCssCollector();
 		const entryChunk = createEntryChunk({name: 'file', viteMetadata: createViteMetadata(['file.css'], [])});
 
@@ -56,6 +58,7 @@ describe('createCssCollector', () => {
 	});
 
 	it('import local css file and css file in import', () => {
+		expect.assertions(2);
 		const cssCollector = createCssCollector();
 		const entryChunk = createEntryChunk({name: 'file', viteMetadata: createViteMetadata(['file.css'], []), imports: ['lib']});
 		const bundle: OutputBundleLike = {
@@ -68,6 +71,7 @@ describe('createCssCollector', () => {
 	});
 
 	it('invalid import', () => {
+		expect.assertions(1);
 		const cssCollector = createCssCollector();
 		const entryChunk = createEntryChunk({name: 'file', viteMetadata: createViteMetadata(['file.css'], []), imports: ['lib']});
 
@@ -76,7 +80,8 @@ describe('createCssCollector', () => {
 		}).toThrow('Unable to find chunk "lib" in bundle');
 	});
 
-	it('invalid chunck', () => {
+	it('invalid chunk', () => {
+		expect.assertions(1);
 		const cssCollector = createCssCollector();
 		const invalidMetadata = createViteMetadata([], []);
 		Reflect.set(invalidMetadata, 'importedCss', ['file.css']);
@@ -92,6 +97,7 @@ describe('createCssCollector', () => {
 	});
 
 	it('circular dependency', () => {
+		expect.assertions(1);
 		const cssCollector = createCssCollector();
 		const chunkA = createEntryChunk({name: 'chunkA', imports: ['chunkB.js']});
 		const chunkB = createEntryChunk({name: 'chunkB', imports: ['chunkA.js']});
@@ -105,6 +111,7 @@ describe('createCssCollector', () => {
 	});
 
 	it('duplicate css across shared imports', () => {
+		expect.assertions(1);
 		const cssCollector = createCssCollector();
 		const shared = createEntryChunk({name: 'shared', viteMetadata: createViteMetadata(['shared.css'], [])});
 		const libA = createEntryChunk({name: 'libA', viteMetadata: createViteMetadata(['shared.css'], []), imports: ['shared.js']});
@@ -123,6 +130,7 @@ describe('createCssCollector', () => {
 	});
 
 	it('includes shared chunk own css when chunk is cached', () => {
+		expect.assertions(2);
 		const cssCollector = createCssCollector();
 		const dep = createEntryChunk({name: 'dep', viteMetadata: createViteMetadata(['dep.css'], [])});
 		const shared = createEntryChunk({name: 'shared', viteMetadata: createViteMetadata(['shared.css'], []), imports: ['dep.js']});
@@ -144,6 +152,7 @@ describe('createCssCollector', () => {
 	});
 
 	it('includes css from shared dependency regardless of prior traversal order', () => {
+		expect.assertions(2);
 		const cssCollector = createCssCollector();
 		const x = createEntryChunk({name: 'x', viteMetadata: createViteMetadata(['x.css'], [])});
 		const a = createEntryChunk({name: 'a', imports: ['x.js']});
@@ -167,6 +176,7 @@ describe('createCssCollector', () => {
 	});
 
 	it('cached result with seen css', () => {
+		expect.assertions(1);
 		const cssCollector = createCssCollector();
 		const lib = createEntryChunk({name: 'lib', viteMetadata: createViteMetadata(['common.css'], [])});
 		const entry = createEntryChunk({name: 'entry', imports: ['lib.js']});
@@ -186,6 +196,7 @@ describe('createCssCollector', () => {
 	});
 
 	it('returns empty list when chunk is already seen in caller context', () => {
+		expect.assertions(1);
 		const cssCollector = createCssCollector();
 		const entry = createEntryChunk({name: 'entry', viteMetadata: createViteMetadata(['entry.css'], [])});
 
@@ -194,6 +205,7 @@ describe('createCssCollector', () => {
 	});
 
 	it('handles imports without css', () => {
+		expect.assertions(1);
 		const cssCollector = createCssCollector();
 		const entry = createEntryChunk({name: 'entry', imports: ['no-css.js']});
 		const bundle: OutputBundleLike = {
@@ -205,6 +217,7 @@ describe('createCssCollector', () => {
 	});
 
 	it('ignores imported bundle entries that are not chunks', () => {
+		expect.assertions(1);
 		const cssCollector = createCssCollector();
 		const entry = createEntryChunk({name: 'entry', imports: ['asset.dat']});
 		const bundle: OutputBundleLike = {
@@ -220,6 +233,7 @@ describe('createCssCollector', () => {
 	});
 
 	it('clears cache', () => {
+		expect.assertions(2);
 		const cssCollector = createCssCollector();
 		const entry = createEntryChunk({name: 'entry'});
 		cssCollector.getCssFilesForChunk(entry, {});

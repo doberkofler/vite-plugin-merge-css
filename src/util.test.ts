@@ -4,22 +4,27 @@ import {describe, it, expect} from 'vitest';
 describe('util', () => {
 	describe('replaceExtension', () => {
 		it('should replace extension in a filename', () => {
+			expect.assertions(1);
 			expect(replaceExtension('test.js', '.css')).toBe('test.css');
 		});
 
 		it('should replace extension in a path', () => {
+			expect.assertions(1);
 			expect(replaceExtension('src/index.js', '.css')).toBe('src/index.css');
 		});
 
 		it('should handle filenames without extensions', () => {
+			expect.assertions(1);
 			expect(replaceExtension('test', '.css')).toBe('test.css');
 		});
 
 		it('should handle empty extensions', () => {
+			expect.assertions(1);
 			expect(replaceExtension('test.js', '')).toBe('test');
 		});
 
 		it('should handle multiple dots in filename', () => {
+			expect.assertions(1);
 			expect(replaceExtension('test.config.js', '.css')).toBe('test.config.css');
 		});
 	});

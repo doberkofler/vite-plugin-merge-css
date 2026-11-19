@@ -44,6 +44,8 @@ export const linter = defineConfig({
 		'eslint/no-warning-comments': 'off',
 		'eslint/no-undefined': 'off', // TODO: consider enabling
 		'eslint/no-plusplus': 'off',
+		// Keep declarations at their point of use rather than grouping unrelated initializers.
+		'eslint/one-var': ['error', 'never'],
 		'eslint/sort-imports': 'off',
 		'eslint/sort-keys': 'off',
 		'eslint/no-ternary': 'off',

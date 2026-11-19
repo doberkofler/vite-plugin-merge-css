@@ -18,7 +18,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [22.x, 24.x, 25.x]
+        node-version: [22.x, 24.x, 26.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
@@ -28,7 +28,7 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 9
+          version: latest
           run_install: false
 
       - name: Setup Node.js
